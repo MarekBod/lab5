@@ -1,0 +1,183 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+  color: #222;
+  background: #fdfdfd;
+  scroll-behavior: smooth;
+}
+
+h1, h2 {
+  font-family: 'Playfair Display', serif;
+  color: #111;
+}
+
+/* ---------------------- */
+/* HEADER */
+/* ---------------------- */
+header {
+  background: #fff;
+  padding: 1rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #ff9f1c;
+}
+
+/* ---------------------- */
+/* BUTTONS */
+/* ---------------------- */
+.btn {
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  background: #ff9f1c;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s ease;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+/* ---------------------- */
+/* HERO SECTION */
+/* ---------------------- */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  background: linear-gradient(to right, #fff9f0, #fff);
+  padding: 3rem 2rem;
+  border-radius: 10px;
+  margin-bottom: 3rem;
+}
+
+.hero__content {
+  max-width: 500px;
+}
+
+.hero__content h1 {
+  font-size: 2.3rem;
+  margin-bottom: 1rem;
+}
+
+.hero__content p {
+  margin-bottom: 1.5rem;
+}
+
+.hero__image img {
+  width: 420px;
+  max-width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ---------------------- */
+/* GRID & CARDS */
+/* ---------------------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+/* ---------------------- */
+/* FORMS */
+/* ---------------------- */
+form {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  max-width: 400px;
+  margin: 1rem 0;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+  margin-top: 0.6rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 0.2rem;
+}
+
+/* ---------------------- */
+/* MODAL */
+/* ---------------------- */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 300px;
+}
+
+/* ---------------------- */
+/* FOOTER */
+/* ---------------------- */
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  background: #fff;
+  border-top: 1px solid #eee;
+  margin-top: 3rem;
+}

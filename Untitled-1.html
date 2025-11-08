@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Explore and Travel</title>
+
+  <!-- 🔹 Підключення шрифтів і стилів -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Open+Sans&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header>
+    <div class="logo">🌍 Explore & Travel</div>
+    <nav>
+      <ul>
+        <li><a href="#list">Home</a></li>
+        <li><a href="#create">Create</a></li>
+        <li><a href="#edit">Edit</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 🔹 HERO SECTION -->
+    <section class="hero">
+      <div class="hero__content">
+        <h1>Discover the world with us</h1>
+        <p>Find your next destination or add your own travel experience!</p>
+        <button id="createBtn" class="btn">Create your destination</button>
+      </div>
+      <div class="hero__image">
+        <img src="images/2.jpg" alt="Travel image">
+      </div>
+    </section>
+
+    <!-- 🔹 FEATURED DESTINATIONS -->
+    <section id="list">
+      <h2>Featured Destinations</h2>
+      <div id="destGrid" class="grid"></div>
+    </section>
+
+    <!-- 🔹 CREATE SECTION -->
+    <section id="create">
+      <h2>Create New Destination</h2>
+      <form id="createForm">
+        <label>Name:</label>
+        <input type="text" id="name" required pattern="[A-Za-z\s]+" placeholder="e.g. Bali">
+
+        <label>Country:</label>
+        <input type="text" id="country" required>
+
+        <label>Price ($):</label>
+        <input type="number" id="price" required min="100">
+
+        <label>Days:</label>
+        <input type="number" id="days" required min="1">
+
+        <label>Rating (1–5):</label>
+        <input type="number" id="rating" required min="1" max="5" step="0.1">
+
+        <label>Image URL:</label>
+        <input type="text" id="image" required placeholder="images/3.jpg">
+
+        <button class="btn" type="submit">Add Destination</button>
+      </form>
+    </section>
+
+    <!-- 🔹 EDIT SECTION -->
+    <section id="edit">
+      <h2>Edit Destination</h2>
+      <form id="findForm">
+        <label>Enter ID to Edit:</label>
+        <input type="number" id="editId" required>
+        <button class="btn" type="button" id="loadBtn">Load</button>
+      </form>
+
+      <form id="editForm" style="display:none;">
+        <label>Name:</label>
+        <input type="text" id="editName" required>
+        <label>Country:</label>
+        <input type="text" id="editCountry" required>
+        <label>Price ($):</label>
+        <input type="number" id="editPrice" required min="100">
+        <label>Days:</label>
+        <input type="number" id="editDays" required min="1">
+        <label>Rating:</label>
+        <input type="number" id="editRating" required min="1" max="5">
+        <label>Image URL:</label>
+        <input type="text" id="editImage" required>
+        <button class="btn" type="submit">Save Changes</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Explore and Travel. All rights reserved.</p>
+  </footer>
+
+  <!-- 🔹 MODAL WINDOW -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <p id="modalText"></p>
+      <button class="btn" id="closeModal">OK</button>
+    </div>
+  </div>
+
+  <!-- 🔹 JAVASCRIPT -->
+  <script>
+    // ---------- DEFAULT DATA ----------
+    const baseDestinations = [
+      { id: 1, name: "Raja Ampat", country: "Indonesia", price: 1200, days: 7, rating: 4.9, image: "images/3.jpg" },
+      { id: 2, name: "Fanjingshan", country: "China", price: 950, days: 5, rating: 4.6, image: "images/4.jpg" },
+      { id: 3, name: "Vevey", country: "Switzerland", price: 1800, days: 6, rating: 4.8, image: "images/5.jpg" },
+      { id: 4, name: "Skadar", country: "Montenegro", price: 800, days: 4, rating: 4.5, image: "images/6.jpg" }
+    ];
+
+    let destinations = JSON.parse(localStorage.getItem("destinations")) || baseDestinations;
+    const grid = document.getElementById("destGrid");
+
+    function renderList() {
+      grid.innerHTML = "";
+      destinations.forEach(dest => {
+        grid.insertAdjacentHTML("beforeend", `
+          <div class="card">
+            <img src="${dest.image}" alt="${dest.name}">
+            <h3>${dest.name}</h3>
+            <p>${dest.country}</p>
+            <p>💰 ${dest.price}$ | ⭐ ${dest.rating} | 📅 ${dest.days} days</p>
+            <small>ID: ${dest.id}</small>
+          </div>
+        `);
+      });
+    }
+    renderList();
+
+    // ---------- MODAL ----------
+    const modal = document.getElementById("modal");
+    const modalText = document.getElementById("modalText");
+    const closeModal = document.getElementById("closeModal");
+    closeModal.onclick = () => modal.style.display = "none";
+
+    function showModal(text) {
+      modalText.textContent = text;
+      modal.style.display = "flex";
+    }
+
+    // ---------- CREATE ----------
+    document.getElementById("createForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const newDest = {
+        id: Date.now(),
+        name: name.value.trim(),
+        country: country.value.trim(),
+        price: parseFloat(price.value),
+        days: parseInt(days.value),
+        rating: parseFloat(rating.value),
+        image: image.value.trim()
+      };
+
+      if (!newDest.name || !newDest.country) {
+        showModal("❌ Please fill in all fields correctly!");
+        return;
+      }
+
+      destinations.push(newDest);
+      localStorage.setItem("destinations", JSON.stringify(destinations));
+      renderList();
+      showModal("✅ Destination added successfully!");
+      e.target.reset();
+    });
+
+    // ---------- EDIT ----------
+    const loadBtn = document.getElementById("loadBtn");
+    const editForm = document.getElementById("editForm");
+
+    loadBtn.addEventListener("click", () => {
+      const id = parseInt(document.getElementById("editId").value);
+      const found = destinations.find(d => d.id === id);
+      if (!found) return showModal("❌ Destination not found!");
+
+      editForm.style.display = "block";
+      editName.value = found.name;
+      editCountry.value = found.country;
+      editPrice.value = found.price;
+      editDays.value = found.days;
+      editRating.value = found.rating;
+      editImage.value = found.image;
+
+      editForm.onsubmit = (e) => {
+        e.preventDefault();
+        found.name = editName.value;
+        found.country = editCountry.value;
+        found.price = parseFloat(editPrice.value);
+        found.days = parseInt(editDays.value);
+        found.rating = parseFloat(editRating.value);
+        found.image = editImage.value;
+        localStorage.setItem("destinations", JSON.stringify(destinations));
+        renderList();
+        showModal("✅ Changes saved successfully!");
+        editForm.reset();
+        editForm.style.display = "none";
+      };
+    });
+
+    // ---------- SCROLL TO CREATE ----------
+    document.getElementById("createBtn").addEventListener("click", () => {
+      document.querySelector("#create").scrollIntoView({ behavior: "smooth" });
+    });
+  </script>
+</body>
+</html>
