@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "name": "Raja Ampat",
+    "country": "Indonesia",
+    "price": 1200,
+    "days": 7,
+    "rating": 4.9,
+    "image": "images/3.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Fanjingshan",
+    "country": "China",
+    "price": 950,
+    "days": 5,
+    "rating": 4.6,
+    "image": "images/4.jpg"
+  },
+  {
+    "id": 1763215984084,
+    "name": "Lviv",
+    "country": "Ukraine",
+    "price": 333,
+    "days": 2,
+    "rating": 4,
+    "image": "images/3.jpg"
+  }
+]

@@ -108,106 +108,146 @@
 
   <!-- 🔹 JAVASCRIPT -->
   <script>
-    // ---------- DEFAULT DATA ----------
-    const baseDestinations = [
-      { id: 1, name: "Raja Ampat", country: "Indonesia", price: 1200, days: 7, rating: 4.9, image: "images/3.jpg" },
-      { id: 2, name: "Fanjingshan", country: "China", price: 950, days: 5, rating: 4.6, image: "images/4.jpg" },
-      { id: 3, name: "Vevey", country: "Switzerland", price: 1800, days: 6, rating: 4.8, image: "images/5.jpg" },
-      { id: 4, name: "Skadar", country: "Montenegro", price: 800, days: 4, rating: 4.5, image: "images/6.jpg" }
-    ];
+    // --------------------
+// CONNECT TO BACKEND
+// --------------------
+const API = "http://localhost:3000/destinations";
+let destinations = [];
 
-    let destinations = JSON.parse(localStorage.getItem("destinations")) || baseDestinations;
-    const grid = document.getElementById("destGrid");
-
-    function renderList() {
-      grid.innerHTML = "";
-      destinations.forEach(dest => {
-        grid.insertAdjacentHTML("beforeend", `
-          <div class="card">
-            <img src="${dest.image}" alt="${dest.name}">
-            <h3>${dest.name}</h3>
-            <p>${dest.country}</p>
-            <p>💰 ${dest.price}$ | ⭐ ${dest.rating} | 📅 ${dest.days} days</p>
-            <small>ID: ${dest.id}</small>
-          </div>
-        `);
-      });
-    }
+// --------------------
+// LOAD LIST FROM SERVER
+// --------------------
+async function loadDestinations() {
+  try {
+    const res = await fetch(API);
+    destinations = await res.json();
     renderList();
+  } catch (err) {
+    console.error("Fetch error:", err);
+  }
+}
 
-    // ---------- MODAL ----------
-    const modal = document.getElementById("modal");
-    const modalText = document.getElementById("modalText");
-    const closeModal = document.getElementById("closeModal");
-    closeModal.onclick = () => modal.style.display = "none";
+loadDestinations();
 
-    function showModal(text) {
-      modalText.textContent = text;
-      modal.style.display = "flex";
-    }
+// --------------------
+// RENDER CARDS
+// --------------------
+const grid = document.getElementById("destGrid");
 
-    // ---------- CREATE ----------
-    document.getElementById("createForm").addEventListener("submit", e => {
-      e.preventDefault();
-      const newDest = {
-        id: Date.now(),
-        name: name.value.trim(),
-        country: country.value.trim(),
-        price: parseFloat(price.value),
-        days: parseInt(days.value),
-        rating: parseFloat(rating.value),
-        image: image.value.trim()
-      };
+function renderList() {
+  grid.innerHTML = "";
+  destinations.forEach(dest => {
+    grid.insertAdjacentHTML("beforeend", `
+      <div class="card">
+        <img src="${dest.image}" alt="${dest.name}">
+        <h3>${dest.name}</h3>
+        <p>${dest.country}</p>
+        <p>💰 ${dest.price}$ | ⭐ ${dest.rating} | 📅 ${dest.days} days</p>
+        <small>ID: ${dest.id}</small>
+      </div>
+    `);
+  });
+}
 
-      if (!newDest.name || !newDest.country) {
-        showModal("❌ Please fill in all fields correctly!");
-        return;
-      }
+// --------------------
+// MODAL WINDOW
+// --------------------
+const modal = document.getElementById("modal");
+const modalText = document.getElementById("modalText");
+const closeModal = document.getElementById("closeModal");
 
-      destinations.push(newDest);
-      localStorage.setItem("destinations", JSON.stringify(destinations));
-      renderList();
-      showModal("✅ Destination added successfully!");
-      e.target.reset();
+closeModal.onclick = () => modal.style.display = "none";
+
+function showModal(text) {
+  modalText.textContent = text;
+  modal.style.display = "flex";
+}
+
+// --------------------
+// CREATE NEW DESTINATION
+// --------------------
+document.getElementById("createForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const newDest = {
+    name: document.getElementById("name").value.trim(),
+    country: document.getElementById("country").value.trim(),
+    price: parseFloat(document.getElementById("price").value),
+    days: parseInt(document.getElementById("days").value),
+    rating: parseFloat(document.getElementById("rating").value),
+    image: document.getElementById("image").value.trim()
+  };
+
+  try {
+    await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newDest)
     });
 
-    // ---------- EDIT ----------
-    const loadBtn = document.getElementById("loadBtn");
-    const editForm = document.getElementById("editForm");
+    await loadDestinations();
+    showModal("✔ Destination added!");
+    e.target.reset();
 
-    loadBtn.addEventListener("click", () => {
-      const id = parseInt(document.getElementById("editId").value);
-      const found = destinations.find(d => d.id === id);
-      if (!found) return showModal("❌ Destination not found!");
+  } catch (err) {
+    console.error("POST error:", err);
+  }
+});
 
-      editForm.style.display = "block";
-      editName.value = found.name;
-      editCountry.value = found.country;
-      editPrice.value = found.price;
-      editDays.value = found.days;
-      editRating.value = found.rating;
-      editImage.value = found.image;
 
-      editForm.onsubmit = (e) => {
-        e.preventDefault();
-        found.name = editName.value;
-        found.country = editCountry.value;
-        found.price = parseFloat(editPrice.value);
-        found.days = parseInt(editDays.value);
-        found.rating = parseFloat(editRating.value);
-        found.image = editImage.value;
-        localStorage.setItem("destinations", JSON.stringify(destinations));
-        renderList();
-        showModal("✅ Changes saved successfully!");
-        editForm.reset();
-        editForm.style.display = "none";
-      };
+// --------------------
+// LOAD DESTINATION FOR EDIT
+// --------------------
+const loadBtn = document.getElementById("loadBtn");
+const editForm = document.getElementById("editForm");
+
+loadBtn.addEventListener("click", async () => {
+  const id = parseInt(document.getElementById("editId").value);
+  const res = await fetch(`${API}/${id}`);
+
+  if (!res.ok) return showModal("❌ Destination not found!");
+
+  const found = await res.json();
+
+  editForm.style.display = "block";
+  editName.value = found.name;
+  editCountry.value = found.country;
+  editPrice.value = found.price;
+  editDays.value = found.days;
+  editRating.value = found.rating;
+  editImage.value = found.image;
+
+  editForm.onsubmit = async e => {
+    e.preventDefault();
+
+    const updated = {
+      name: editName.value,
+      country: editCountry.value,
+      price: parseFloat(editPrice.value),
+      days: parseInt(editDays.value),
+      rating: parseFloat(editRating.value),
+      image: editImage.value
+    };
+
+    await fetch(`${API}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updated)
     });
 
-    // ---------- SCROLL TO CREATE ----------
-    document.getElementById("createBtn").addEventListener("click", () => {
-      document.querySelector("#create").scrollIntoView({ behavior: "smooth" });
-    });
+    await loadDestinations();
+    showModal("✔ Changes saved!");
+    editForm.style.display = "none";
+  };
+});
+
+// --------------------
+// SCROLL TO CREATE SECTION
+// --------------------
+document.getElementById("createBtn").addEventListener("click", () => {
+  document.querySelector("#create").scrollIntoView({ behavior: "smooth" });
+});
+
   </script>
 </body>
 </html>
